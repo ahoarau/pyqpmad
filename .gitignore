@@ -16,3 +16,4 @@ result
 *.conda
 dist/
 .venv/
+wheelhouse/
