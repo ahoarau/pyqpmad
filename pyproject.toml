@@ -1,0 +1,25 @@
+[build-system]
+requires = ["scikit-build-core>=0.8.0", "nanobind>=2.1.0"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "pyqpmad"
+version = "1.4.0"
+description = "Python wrapper for qpmad"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[tool.scikit-build]
+cmake.version = ">=3.22"
+ninja.version = ">=1.5"
+
+[tool.cibuildwheel]
+test-command = "pytest {project}/test_qpmad.py"
+test-requires = "pytest"
+# Build for standard CPython only, skipping 32-bit builds
+build = "cp3*"
+skip = "*-win32 *_i686"
