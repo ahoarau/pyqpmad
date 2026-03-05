@@ -20,7 +20,7 @@ ninja.version = ">=1.5"
 [tool.cibuildwheel]
 build-frontend = "build[uv]"
 test-command = "uv run --with pytest {project}/test_qpmad.py"
-test-requires = "uv"
+
 # Build for standard CPython only, skipping 32-bit builds
 build = "cp3*"
 skip = "*-win32 *_i686"
