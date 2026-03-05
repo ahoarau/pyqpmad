@@ -19,7 +19,7 @@ ninja.version = ">=1.5"
 
 [tool.cibuildwheel]
 test-command = "pytest {project}/test_qpmad.py"
-test-requires = "pytest, pytest-benchmark, numpy"
+test-requires = ["pytest", "pytest-benchmark", "numpy"]
 
 # Build for standard CPython only, skipping 32-bit builds
 build = "cp3*"
