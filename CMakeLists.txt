@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 project(pyqpmad)
 
-find_package(Python REQUIRED COMPONENTS Interpreter Development.Module)
+find_package(Python 3.10 REQUIRED COMPONENTS Interpreter Development.Module)
 
 include(FetchContent)
 FetchContent_Declare(
