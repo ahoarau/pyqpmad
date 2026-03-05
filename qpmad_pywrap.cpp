@@ -33,6 +33,7 @@ NB_MODULE(pyqpmad, m) {
 
   nb::class_<qpmad::Solver>(m, "Solver")
       .def(nb::init<>())
+      .def("reserve", &qpmad::Solver::reserve, nb::arg("primal_size"), nb::arg("num_simple_bounds"), nb::arg("num_general_constraints"))
       .def(
           "solve",
           [](qpmad::Solver &s, Eigen::Ref<Eigen::VectorXd> primal,
