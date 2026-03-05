@@ -17,3 +17,5 @@ result
 dist/
 .venv/
 wheelhouse/
+output/
+.benchmarks/
