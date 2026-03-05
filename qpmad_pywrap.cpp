@@ -33,12 +33,12 @@ NB_MODULE(pyqpmad, m) {
 
   nb::class_<qpmad::Solver>(m, "Solver")
       .def(nb::init<>())
-      .def("reserve", &qpmad::Solver::reserve, nb::arg("primal_size"), nb::arg("num_simple_bounds"), nb::arg("num_general_constraints"))
+      .def("reserve", &qpmad::Solver::reserve, nb::arg("primal_size"),
+           nb::arg("num_simple_bounds"), nb::arg("num_general_constraints"))
       .def(
           "solve",
           [](qpmad::Solver &s, Eigen::Ref<Eigen::VectorXd> primal,
-             Eigen::Ref<Eigen::MatrixXd> H,
-             const Eigen::Ref<const Eigen::VectorXd> &h,
+             Eigen::MatrixXd H, const Eigen::Ref<const Eigen::VectorXd> &h,
              const std::optional<Eigen::Ref<const Eigen::VectorXd>> &lb,
              const std::optional<Eigen::Ref<const Eigen::VectorXd>> &ub,
              const std::optional<Eigen::Ref<const Eigen::MatrixXd>> &A,
@@ -51,15 +51,14 @@ NB_MODULE(pyqpmad, m) {
             const qpmad::SolverParameters &params_ref =
                 params ? *params : default_params;
 
-            return s.solve(primal, H, h, 
-                           lb ? *lb : (Eigen::Ref<const Eigen::VectorXd>)ev,
-                           ub ? *ub : (Eigen::Ref<const Eigen::VectorXd>)ev,
-                           A ? *A : (Eigen::Ref<const Eigen::MatrixXd>)em,
-                           Alb ? *Alb : (Eigen::Ref<const Eigen::VectorXd>)ev,
-                           Aub ? *Aub : (Eigen::Ref<const Eigen::VectorXd>)ev,
-                           params_ref);
+            return s.solve(
+                primal, H, h, lb ? *lb : (Eigen::Ref<const Eigen::VectorXd>)ev,
+                ub ? *ub : (Eigen::Ref<const Eigen::VectorXd>)ev,
+                A ? *A : (Eigen::Ref<const Eigen::MatrixXd>)em,
+                Alb ? *Alb : (Eigen::Ref<const Eigen::VectorXd>)ev,
+                Aub ? *Aub : (Eigen::Ref<const Eigen::VectorXd>)ev, params_ref);
           },
-          nb::arg("primal").noconvert(), nb::arg("H").noconvert(), nb::arg("h"),
+          nb::arg("primal").noconvert(), nb::arg("H"), nb::arg("h"),
           nb::arg("lb") = nb::none(), nb::arg("ub") = nb::none(),
           nb::arg("A") = nb::none(), nb::arg("Alb") = nb::none(),
           nb::arg("Aub") = nb::none(), nb::arg("params") = nb::none());

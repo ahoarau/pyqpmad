@@ -11,7 +11,7 @@ def test_unconstrained():
     # Minimize 1/2 x'Hx + h'x  =>  x'x + [-2, -4]'x
     # Gradient: 2x + [-2, -4]' = 0  => x = [1, 2]
     
-    status = solver.solve(primal, H.copy(order='F'), h)
+    status = solver.solve(primal, H, h)
     
     assert status == pyqpmad.ReturnStatus.OK
     np.testing.assert_allclose(primal, [1.0, 2.0])
@@ -26,7 +26,7 @@ def test_constrained():
     Aub = np.array([1.0])
     primal = np.zeros(2)
     
-    status = solver.solve(primal, H.copy(order='F'), h, A=A, Alb=Alb, Aub=Aub)
+    status = solver.solve(primal, H, h, A=A, Alb=Alb, Aub=Aub)
     
     assert status == pyqpmad.ReturnStatus.OK
     # Optimum is at x=0.5, y=0.5
@@ -41,7 +41,7 @@ def test_bounds():
     ub = np.array([10.0, 10.0])
     primal = np.zeros(2)
     
-    status = solver.solve(primal, H.copy(order='F'), h, lb=lb, ub=ub)
+    status = solver.solve(primal, H, h, lb=lb, ub=ub)
     
     assert status == pyqpmad.ReturnStatus.OK
     np.testing.assert_allclose(primal, [1.0, 1.0])
@@ -54,14 +54,14 @@ def test_random_problems(size):
     # Generate random positive definite Hessian
     Q, _ = np.linalg.qr(np.random.randn(size, size))
     D = np.diag(np.random.rand(size) + 0.1)
-    H = (Q @ D @ Q.T).copy(order='F')
+    H = (Q @ D @ Q.T)
     
     # Random linear part
     h = np.random.randn(size)
     
     # 1. Unconstrained
     primal = np.zeros(size)
-    status = solver.solve(primal, H.copy(order='F'), h)
+    status = solver.solve(primal, H, h)
     assert status == pyqpmad.ReturnStatus.OK
     # Reference solution: x = -H^-1 h
     ref_sol = np.linalg.solve(H, -h)
@@ -73,7 +73,7 @@ def test_random_problems(size):
     lb = target - 0.1
     ub = target + 0.1
     primal = np.zeros(size)
-    status = solver.solve(primal, H.copy(order='F'), h, lb=lb, ub=ub)
+    status = solver.solve(primal, H, h, lb=lb, ub=ub)
     assert status == pyqpmad.ReturnStatus.OK
     # Check if bounds are satisfied
     assert np.all(primal >= lb - 1e-10)
@@ -82,7 +82,7 @@ def test_random_problems(size):
     # 3. Constrained
     # Add random linear constraints
     n_cons = size // 2 if size > 2 else 1
-    A = np.random.randn(n_cons, size).copy(order='F')
+    A = np.random.randn(n_cons, size)
     # Make constraints feasible by picking a point and calculating bounds
     x_feat = np.random.randn(size)
     Ax_feat = A @ x_feat
@@ -90,7 +90,7 @@ def test_random_problems(size):
     Aub = Ax_feat + 0.1
     
     primal = np.zeros(size)
-    status = solver.solve(primal, H.copy(order='F'), h, A=A, Alb=Alb, Aub=Aub)
+    status = solver.solve(primal, H, h, A=A, Alb=Alb, Aub=Aub)
     assert status == pyqpmad.ReturnStatus.OK
     # Check if constraints are satisfied
     Ax = A @ primal

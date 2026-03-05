@@ -22,8 +22,7 @@ uv pip install .
 
 To run the tests:
 ```bash
-uv pip install pytest
-uv run pytest test_qpmad.py
+uv run --with pytest  test_qpmad.py
 ```
 
 ### Using `pip`
@@ -73,7 +72,7 @@ Aub = np.array([1.0]) # Upper bound
 primal = np.zeros(2)
 
 # Solve
-status = solver.solve(primal, H.copy(order='F'), h, A=A, Alb=Alb, Aub=Aub)
+status = solver.solve(primal, H, h, A=A, Alb=Alb, Aub=Aub)
 
 if status == pyqpmad.ReturnStatus.OK:
     print(f"Optimal solution found: {primal}") # Output: [0.5 0.5]
