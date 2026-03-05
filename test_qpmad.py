@@ -54,17 +54,18 @@ def test_random_problems(size):
     # Generate random positive definite Hessian
     Q, _ = np.linalg.qr(np.random.randn(size, size))
     D = np.diag(np.random.rand(size) + 0.1)
-    H = (Q @ D @ Q.T)
+    H = np.asfortranarray(Q @ D @ Q.T)
     
     # Random linear part
     h = np.random.randn(size)
     
     # 1. Unconstrained
     primal = np.zeros(size)
+    H_orig = H.copy()
     status = solver.solve(primal, H, h)
     assert status == pyqpmad.ReturnStatus.OK
     # Reference solution: x = -H^-1 h
-    ref_sol = np.linalg.solve(H, -h)
+    ref_sol = np.linalg.solve(H_orig, -h)
     np.testing.assert_allclose(primal, ref_sol, atol=1e-8)
     
     # 2. Bounded
@@ -73,7 +74,7 @@ def test_random_problems(size):
     lb = target - 0.1
     ub = target + 0.1
     primal = np.zeros(size)
-    status = solver.solve(primal, H, h, lb=lb, ub=ub)
+    status = solver.solve(primal, H_orig.copy(order='F'), h, lb=lb, ub=ub)
     assert status == pyqpmad.ReturnStatus.OK
     # Check if bounds are satisfied
     assert np.all(primal >= lb - 1e-10)
@@ -82,7 +83,7 @@ def test_random_problems(size):
     # 3. Constrained
     # Add random linear constraints
     n_cons = size // 2 if size > 2 else 1
-    A = np.random.randn(n_cons, size)
+    A = np.asfortranarray(np.random.randn(n_cons, size))
     # Make constraints feasible by picking a point and calculating bounds
     x_feat = np.random.randn(size)
     Ax_feat = A @ x_feat
@@ -90,7 +91,7 @@ def test_random_problems(size):
     Aub = Ax_feat + 0.1
     
     primal = np.zeros(size)
-    status = solver.solve(primal, H, h, A=A, Alb=Alb, Aub=Aub)
+    status = solver.solve(primal, H_orig.copy(order='F'), h, A=A, Alb=Alb, Aub=Aub)
     assert status == pyqpmad.ReturnStatus.OK
     # Check if constraints are satisfied
     Ax = A @ primal
