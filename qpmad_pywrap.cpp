@@ -13,7 +13,6 @@ struct InequalityDualResult {
 };
 
 NB_MODULE(pyqpmad, m) {
-  const Eigen::VectorXd empty_v;
   nb::class_<InequalityDualResult>(m, "InequalityDualResult",
                                    "Active inequality dual variables returned "
                                    "by Solver.get_inequality_dual().")
@@ -78,16 +77,14 @@ NB_MODULE(pyqpmad, m) {
            "num_general_constraints is the number of rows in A.")
       .def(
           "solve",
-          [&empty_v](
-              qpmad::Solver &s, Eigen::Ref<Eigen::VectorXd> primal,
-              Eigen::Ref<Eigen::MatrixXd> H,
-              const Eigen::Ref<const Eigen::VectorXd> &h,
-              const std::optional<Eigen::Ref<const Eigen::VectorXd>> &lb,
-              const std::optional<Eigen::Ref<const Eigen::VectorXd>> &ub,
-              const std::optional<Eigen::Ref<const Eigen::MatrixXd>> &A,
-              const std::optional<Eigen::Ref<const Eigen::VectorXd>> &Alb,
-              const std::optional<Eigen::Ref<const Eigen::VectorXd>> &Aub,
-              const qpmad::SolverParameters &params) {
+          [](qpmad::Solver &s, Eigen::Ref<Eigen::VectorXd> primal,
+             Eigen::Ref<Eigen::MatrixXd> H, Eigen::Ref<const Eigen::VectorXd> h,
+             std::optional<Eigen::Ref<const Eigen::VectorXd>> lb,
+             std::optional<Eigen::Ref<const Eigen::VectorXd>> ub,
+             std::optional<Eigen::Ref<const Eigen::MatrixXd>> A,
+             std::optional<Eigen::Ref<const Eigen::VectorXd>> Alb,
+             std::optional<Eigen::Ref<const Eigen::VectorXd>> Aub,
+             const qpmad::SolverParameters &params) {
             if (lb.has_value() != ub.has_value()) {
               throw std::invalid_argument(
                   "lb and ub must both be set or both be None");
@@ -108,12 +105,14 @@ NB_MODULE(pyqpmad, m) {
                              params);
             }
             // unconstrained: pass zero-size bounds (qpmad accepts lb.rows()==0)
+            static const Eigen::VectorXd empty_v;
             return s.solve(primal, H, h, empty_v, empty_v, params);
           },
-          nb::arg("primal").noconvert(), nb::arg("H"), nb::arg("h"),
+          nb::arg("primal"), nb::arg("H"), nb::arg("h"),
           nb::arg("lb") = nb::none(), nb::arg("ub") = nb::none(),
           nb::arg("A") = nb::none(), nb::arg("Alb") = nb::none(),
-          nb::arg("Aub") = nb::none(), nb::arg("params"),
+          nb::arg("Aub") = nb::none(),
+          nb::arg("params") = qpmad::SolverParameters(),
           "Solve the QP: min 0.5 x'Hx + h'x "
           "s.t. lb <= x <= ub, Alb <= A x <= Aub.\n\n"
           "primal: decision variable vector (n,), modified in place with the "
