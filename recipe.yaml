@@ -1,0 +1,40 @@
+context:
+  name: pyqpmad
+  version: "1.4.0"
+
+package:
+  name: ${{ name|lower }}
+  version: ${{ version }}
+
+source:
+  url: https://pypi.org/packages/source/${{ name[0] }}/${{ name }}/${{ name }}-${{ version }}.tar.gz
+  sha256: f6ffcd810c4d16c258b71c54c29c8790debedd1089d6e3dfe827dca0d34923fc
+
+build:
+  number: 0
+  script: ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+
+requirements:
+  build:
+    - ${{ compiler('cxx') }}
+    - cmake >=3.22
+    - ninja >=1.5
+    - scikit-build-core >=0.8.0
+  host:
+    - python
+    - pip
+    - scikit-build-core >=0.8.0
+  run:
+    - python
+
+tests:
+  - python:
+      imports:
+        - pyqpmad
+      pip_check: true
+
+about:
+  summary: Python wrapper for qpmad
+  license: BSD 3-Clause License
+  license_file: LICENSE
+  homepage: https://github.com/ahoarau/pyqpmad
