@@ -19,3 +19,4 @@ dist/
 wheelhouse/
 output/
 .benchmarks/
+uv.lock
