@@ -35,6 +35,6 @@ tests:
 
 about:
   summary: Python wrapper for qpmad
-  license: BSD 3-Clause License
+  license: BSD-3-Clause
   license_file: LICENSE
   homepage: https://github.com/ahoarau/pyqpmad
